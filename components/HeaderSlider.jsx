@@ -60,27 +60,20 @@ const HeaderSlider = () => {
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             exit={{ opacity: 0, filter: "blur(10px)", transition: { duration: 0.8 } }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="flex flex-col-reverse md:flex-row items-center justify-between bg-tech-gradient pt-24 pb-16 md:py-0 px-8 md:px-24 w-full h-full text-techWhite relative overflow-hidden"
+            className="flex flex-col-reverse md:flex-row items-center justify-between bg-tech-gradient pt-20 pb-12 md:py-0 px-8 md:px-20 w-full h-full text-techWhite relative overflow-hidden"
           >
             {/* Cinematic Background Elements */}
             <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-techElectric/30 rounded-full blur-[150px] pointer-events-none"></div>
             <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-techNeon/10 rounded-full blur-[150px] pointer-events-none"></div>
 
             <div className="flex-1 md:pr-12 mt-12 md:mt-0 flex flex-col justify-center relative z-10 h-full">
-              <motion.span
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="inline-block py-1.5 px-4 rounded-full bg-techWhite/5 border border-techWhite/10 text-techNeon text-xs font-semibold tracking-wider uppercase mb-6 w-max backdrop-blur-md"
-              >
-                {sliderData[currentSlide].offer}
-              </motion.span>
+
 
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.8, ease: "easeOut" }}
-                className="text-4xl md:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-6"
+                className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight mb-5"
               >
                 {sliderData[currentSlide].title}
               </motion.h1>
@@ -89,7 +82,7 @@ const HeaderSlider = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
-                className="text-gray-400 md:text-lg max-w-xl mb-10 leading-relaxed font-light"
+                className="text-gray-400 text-sm md:text-base max-w-lg mb-8 leading-relaxed font-light"
               >
                 Elevate your everyday with our premium tech selection. Built for the modern innovator.
               </motion.p>
@@ -100,12 +93,12 @@ const HeaderSlider = () => {
                 transition={{ delay: 0.6, duration: 0.8 }}
                 className="flex flex-wrap items-center gap-4"
               >
-                <button className="px-8 py-3.5 bg-techElectric border border-techElectric rounded-full text-techWhite font-semibold hover:bg-techNeon hover:border-techNeon transition-all duration-300 shadow-neon transform hover:-translate-y-1">
+                <button className="px-6 py-3 bg-techElectric border border-techElectric rounded-full text-techWhite text-sm font-semibold hover:bg-techNeon hover:border-techNeon transition-all duration-300 shadow-neon transform hover:-translate-y-1">
                   {sliderData[currentSlide].buttonText1}
                 </button>
-                <button className="group flex items-center gap-3 px-8 py-3.5 bg-techWhite/5 border border-techWhite/10 rounded-full text-techWhite font-medium hover:bg-techWhite/10 hover:border-techWhite/20 transition-all duration-300 backdrop-blur-md">
+                <button className="group flex items-center gap-3 px-6 py-3 bg-techWhite/5 border border-techWhite/10 rounded-full text-techWhite text-sm font-medium hover:bg-techWhite/10 hover:border-techWhite/20 transition-all duration-300 backdrop-blur-md">
                   {sliderData[currentSlide].buttonText2}
-                  <Image className="group-hover:translate-x-1.5 transition-transform duration-300 filter brightness-0 invert" src={assets.arrow_icon} alt="arrow_icon" />
+                  <Image className="w-3.5 group-hover:translate-x-1 transition-transform duration-300 filter brightness-0 invert" src={assets.arrow_icon} alt="arrow_icon" />
                 </button>
               </motion.div>
             </div>
@@ -117,7 +110,7 @@ const HeaderSlider = () => {
                 animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                 transition={{ delay: 0.2, duration: 1, ease: "easeOut" }}
                 whileHover={{ scale: 1.05, rotateY: -10, transition: { duration: 0.5 } }}
-                className="relative z-20 w-64 md:w-96 lg:w-[500px] h-auto"
+                className="relative z-20 w-56 md:w-72 lg:w-[420px] h-auto"
                 style={{ perspective: 1000 }}
               >
                 <Image

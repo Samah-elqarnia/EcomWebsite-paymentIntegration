@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import { assets, BagIcon, CartIcon } from "@/assets/assets";
+import { assets, BagIcon, CartIcon, HomeIcon, BoxIcon } from "@/assets/assets";
 import Link from "next/link"
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
@@ -42,8 +42,15 @@ const Navbar = () => {
             <Image className="w-5 h-5 opacity-70 group-hover:opacity-100 filter brightness-0 invert transition" src={assets.search_icon} alt="search icon" />
           </button>
           {isSignedIn
-            ? <div className="h-10 w-10 flex items-center justify-center rounded-full border border-techGray overflow-hidden shadow-sm hover:shadow-neon transition">
-              <UserButton appearance={{ elements: { userButtonAvatarBox: "w-full h-full" } }} />
+            ? <div className="h-10 w-10 flex items-center justify-center rounded-full border border-techGray/50 overflow-hidden shadow-sm hover:shadow-neon transition">
+              <UserButton appearance={{ elements: { userButtonAvatarBox: "w-full h-full" } }}>
+                <UserButton.MenuItems>
+                  <UserButton.Link label="Home" labelIcon={<HomeIcon />} href="/" />
+                  <UserButton.Link label="Products" labelIcon={<BoxIcon />} href="/all-products" />
+                  <UserButton.Link label="My Cart" labelIcon={<CartIcon />} href="/cart" />
+                  <UserButton.Link label="My Orders" labelIcon={<BagIcon />} href="/my-orders" />
+                </UserButton.MenuItems>
+              </UserButton>
             </div>
             : <button onClick={openSignIn} className="flex items-center gap-2 px-5 py-2.5 bg-techElectric text-techWhite rounded-full text-sm font-medium hover:bg-techNeon hover:shadow-neon transition-all transform hover:-translate-y-0.5">
               Sign In
@@ -53,7 +60,14 @@ const Navbar = () => {
         <div className="flex items-center md:hidden gap-4">
           {isSeller && <button onClick={() => router.push('/seller')} className="text-xs font-semibold bg-techWhite/10 text-techWhite border border-techWhite/10 backdrop-blur-md px-4 py-2 rounded-full shadow-sm">Dashboard</button>}
           {isSignedIn
-            ? <UserButton />
+            ? <UserButton>
+              <UserButton.MenuItems>
+                <UserButton.Link label="Home" labelIcon={<HomeIcon />} href="/" />
+                <UserButton.Link label="Products" labelIcon={<BoxIcon />} href="/all-products" />
+                <UserButton.Link label="My Cart" labelIcon={<CartIcon />} href="/cart" />
+                <UserButton.Link label="My Orders" labelIcon={<BagIcon />} href="/my-orders" />
+              </UserButton.MenuItems>
+            </UserButton>
             : <button onClick={openSignIn} className="flex items-center justify-center p-2 rounded-full bg-techElectric text-techWhite hover:shadow-neon transition-shadow">
               <Image src={assets.user_icon} alt="user icon" className="w-5 h-5 filter brightness-0 invert" />
             </button>}
