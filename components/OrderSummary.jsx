@@ -1,6 +1,7 @@
 import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const OrderSummary = () => {
 
@@ -28,97 +29,115 @@ const OrderSummary = () => {
   }, [])
 
   return (
-    <div className="w-full md:w-96 bg-gray-500/5 p-5">
-      <h2 className="text-xl md:text-2xl font-medium text-gray-700">
-        Order Summary
+    <div className="w-full relative">
+      <h2 className="text-2xl font-bold text-techWhite mb-6 tracking-tight relative z-10">
+        Order <span className="text-gray-500 font-medium">Summary</span>
       </h2>
-      <hr className="border-gray-500/30 my-5" />
-      <div className="space-y-6">
-        <div>
-          <label className="text-base font-medium uppercase text-gray-600 block mb-2">
-            Select Address
+
+      <div className="space-y-8 relative z-10">
+        <div className="space-y-3">
+          <label className="text-xs text-techWhite/50 uppercase tracking-widest font-semibold">
+            Shipping Address
           </label>
-          <div className="relative inline-block w-full text-sm border">
+          <div className="relative w-full">
             <button
-              className="peer w-full text-left px-4 pr-2 py-2 bg-white text-gray-700 focus:outline-none"
+              className={`w-full text-left px-5 py-3.5 bg-techBlack/50 text-techWhite border rounded-xl flex items-center justify-between transition-colors outline-none focus:border-techElectric ${isDropdownOpen ? 'border-techElectric shadow-[0_0_10px_rgba(0,163,255,0.2)]' : 'border-techGray hover:border-gray-500'}`}
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <span>
+              <span className="truncate pr-4 text-sm font-medium">
                 {selectedAddress
-                  ? `${selectedAddress.fullName}, ${selectedAddress.area}, ${selectedAddress.city}, ${selectedAddress.state}`
-                  : "Select Address"}
+                  ? `${selectedAddress.fullName}, ${selectedAddress.city}`
+                  : "Select delivery destination"}
               </span>
-              <svg className={`w-5 h-5 inline float-right transition-transform duration-200 ${isDropdownOpen ? "rotate-0" : "-rotate-90"}`}
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#6B7280"
+              <svg className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isDropdownOpen ? "rotate-180 text-techElectric" : "text-gray-500"}`}
+                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
 
-            {isDropdownOpen && (
-              <ul className="absolute w-full bg-white border shadow-md mt-1 z-10 py-1.5">
-                {userAddresses.map((address, index) => (
-                  <li
-                    key={index}
-                    className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer"
-                    onClick={() => handleAddressSelect(address)}
-                  >
-                    {address.fullName}, {address.area}, {address.city}, {address.state}
-                  </li>
-                ))}
-                <li
-                  onClick={() => router.push("/add-address")}
-                  className="px-4 py-2 hover:bg-gray-500/10 cursor-pointer text-center"
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.ul
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute w-full bg-techGraphite border border-techGray shadow-2xl mt-2 z-50 rounded-xl overflow-hidden backdrop-blur-md"
                 >
-                  + Add New Address
-                </li>
-              </ul>
-            )}
+                  {userAddresses.map((address, index) => (
+                    <li
+                      key={index}
+                      className="px-5 py-3 hover:bg-techWhite/5 cursor-pointer border-b border-techGray/50 text-sm flex flex-col transition-colors"
+                      onClick={() => handleAddressSelect(address)}
+                    >
+                      <span className="text-techWhite font-bold mb-0.5">{address.fullName}</span>
+                      <span className="text-gray-400 text-xs">{address.area}, {address.city}, {address.state}</span>
+                    </li>
+                  ))}
+                  <li
+                    onClick={() => router.push("/add-address")}
+                    className="px-5 py-3.5 hover:bg-techElectric/10 cursor-pointer text-center text-techElectric font-semibold text-sm transition-colors"
+                  >
+                    + Add New Address
+                  </li>
+                </motion.ul>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
-        <div>
-          <label className="text-base font-medium uppercase text-gray-600 block mb-2">
+        <div className="space-y-3">
+          <label className="text-xs text-techWhite/50 uppercase tracking-widest font-semibold flex items-center gap-2">
             Promo Code
           </label>
-          <div className="flex flex-col items-start gap-3">
+          <div className="flex items-center gap-2">
             <input
               type="text"
-              placeholder="Enter promo code"
-              className="flex-grow w-full outline-none p-2.5 text-gray-600 border"
+              placeholder="Enter code"
+              className="flex-grow w-full outline-none px-4 py-3 border border-techGray bg-techBlack/50 rounded-xl text-techWhite placeholder-gray-600 focus:border-techElectric transition-colors text-sm font-medium"
             />
-            <button className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700">
+            <button className="bg-techWhite/10 text-techWhite px-6 py-3 rounded-xl hover:bg-techWhite hover:text-techBlack transition-all font-semibold text-sm flex-shrink-0">
               Apply
             </button>
           </div>
         </div>
 
-        <hr className="border-gray-500/30 my-5" />
+        <hr className="border-techGray/50" />
 
         <div className="space-y-4">
-          <div className="flex justify-between text-base font-medium">
-            <p className="uppercase text-gray-600">Items {getCartCount()}</p>
-            <p className="text-gray-800">{currency}{getCartAmount()}</p>
+          <div className="flex justify-between text-sm font-medium">
+            <p className="text-gray-400">Subtotal ({getCartCount()} Items)</p>
+            <p className="text-techWhite">{currency}{getCartAmount()}</p>
           </div>
-          <div className="flex justify-between">
-            <p className="text-gray-600">Shipping Fee</p>
-            <p className="font-medium text-gray-800">Free</p>
+          <div className="flex justify-between text-sm">
+            <p className="text-gray-400">Shipping Estimate</p>
+            <p className="font-medium text-techWhite">Free</p>
           </div>
-          <div className="flex justify-between">
-            <p className="text-gray-600">Tax (2%)</p>
-            <p className="font-medium text-gray-800">{currency}{Math.floor(getCartAmount() * 0.02)}</p>
+          <div className="flex justify-between text-sm">
+            <p className="text-gray-400">Tax</p>
+            <p className="font-medium text-techWhite">{currency}{Math.floor(getCartAmount() * 0.02)}</p>
           </div>
-          <div className="flex justify-between text-lg md:text-xl font-medium border-t pt-3">
-            <p>Total</p>
-            <p>{currency}{getCartAmount() + Math.floor(getCartAmount() * 0.02)}</p>
+          <div className="flex justify-between text-xl font-bold border-t border-techGray/50 pt-5 mt-2">
+            <p className="text-techWhite">Order Total</p>
+            <p className="text-techElectric">{currency}{getCartAmount() + Math.floor(getCartAmount() * 0.02)}</p>
           </div>
         </div>
       </div>
 
-      <button onClick={createOrder} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
-        Place Order
+      <button
+        onClick={createOrder}
+        disabled={getCartCount() === 0}
+        className="w-full bg-techWhite text-techBlack font-bold py-4 mt-8 rounded-xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+      >
+        Proceed to Checkout
       </button>
-    </div>
+
+      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500 font-medium">
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+        Secure Encrypted Checkout
+      </div>
+    </div >
   );
 };
 

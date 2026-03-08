@@ -8,11 +8,17 @@ const Navbar = () => {
   const { router } = useAppContext()
 
   return (
-    <div className='flex items-center px-4 md:px-8 py-3 justify-between border-b'>
-      <Image onClick={()=>router.push('/')} className='w-28 lg:w-32 cursor-pointer' src={assets.logo} alt="" />
-      <button className='bg-gray-600 text-white px-5 py-2 sm:px-7 sm:py-2 rounded-full text-xs sm:text-sm'>Logout</button>
+    <div className='flex items-center px-4 md:px-8 py-4 justify-between bg-techBlack border-b border-techGray relative z-50'>
+      <div onClick={() => router.push('/')} className='text-xl font-bold tracking-tight cursor-pointer text-techWhite hover:text-techElectric transition-colors'>
+        TechPlace <span className="text-techElectric">Admin</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <button className='bg-techWhite/5 border border-techGray text-techWhite hover:bg-techWhite hover:text-techBlack transition-all px-5 py-2 rounded-lg text-xs font-semibold uppercase tracking-widest'>
+          Logout
+        </button>
+      </div>
     </div>
   )
 }
 
-export default Navbar
+export default Navbar;
