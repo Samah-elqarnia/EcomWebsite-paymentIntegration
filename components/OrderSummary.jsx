@@ -1,18 +1,34 @@
-import { addressDummyData } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const OrderSummary = () => {
 
-  const { currency, router, getCartCount, getCartAmount } = useAppContext()
+  const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [userAddresses, setUserAddresses] = useState([]);
 
   const fetchUserAddresses = async () => {
-    setUserAddresses(addressDummyData);
+    try {
+      const token = await getToken()
+      const { data } = await axios.get('/api/user/get-address', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (data.success) {
+        setUserAddresses(data.addresses)
+        if (data.addresses.length > 0) {
+          setSelectedAddress(data.addresses[0])
+        }
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   const handleAddressSelect = (address) => {
@@ -21,12 +37,42 @@ const OrderSummary = () => {
   };
 
   const createOrder = async () => {
+    try {
+      if (!selectedAddress) {
+        return toast.error("Please select a shipping address");
+      }
 
+      const token = await getToken();
+      const items = Object.keys(cartItems).map(id => ({
+        product: id,
+        quantity: cartItems[id]
+      }))
+
+      const { data } = await axios.post('/api/order/create', {
+        address: selectedAddress._id,
+        items
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (data.success) {
+        toast.success(data.message)
+        setCartItems({})
+        router.push('/order-placed')
+      } else {
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
-    fetchUserAddresses();
-  }, [])
+    if (user) {
+      fetchUserAddresses();
+    }
+  }, [user])
 
   return (
     <div className="w-full relative">

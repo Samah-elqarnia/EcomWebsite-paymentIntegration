@@ -5,8 +5,12 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useAppContext } from "@/context/AppContext";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const AddAddress = () => {
+    const { getToken, router } = useAppContext()
 
     const [address, setAddress] = useState({
         fullName: '',
@@ -19,7 +23,20 @@ const AddAddress = () => {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
-        // Backend logic remains unchanged
+        try {
+            const token = await getToken()
+            const { data } = await axios.post('/api/user/add-address', { address }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            if (data.success) {
+                toast.success(data.message)
+                router.push('/cart')
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
     return (
@@ -27,7 +44,6 @@ const AddAddress = () => {
             <Navbar />
 
             <main className="flex-1 w-full max-w-7xl mx-auto px-6 md:px-16 lg:px-32 pt-32 pb-24 relative overflow-hidden">
-                {/* Subtle background glow */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-techElectric/5 rounded-full blur-[150px] pointer-events-none"></div>
 
                 <motion.div
@@ -38,7 +54,6 @@ const AddAddress = () => {
                 >
                     <div className="w-full lg:max-w-xl">
                         <header className="mb-12">
-
                             <h1 className="text-4xl md:text-5xl font-extrabold text-techWhite tracking-tight mb-4 leading-tight">
                                 Define your <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-techElectric to-techNeon">destination.</span>
                             </h1>
@@ -127,8 +142,6 @@ const AddAddress = () => {
                             </button>
                         </form>
                     </div>
-
-
                 </motion.div>
             </main>
 
