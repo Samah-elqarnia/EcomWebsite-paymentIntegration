@@ -1,14 +1,18 @@
-import { inngest } from "@/config/inngest";
 import connectDB from "@/config/db";
 import User from "@/models/user";
 import Product from "@/models/Product";
-import { getAuth } from "@clerk/nextjs/server";
+import Order from "@/models/Order";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
     try {
-        const { userId } = getAuth(request);
+        const { userId } = await auth();
         const { address, items } = await request.json();
+
+        if (!userId) {
+            return NextResponse.json({ success: false, message: 'Unauthorized' });
+        }
 
         if (!address || items.length === 0) {
             return NextResponse.json({ success: false, message: 'Invalid data' });
@@ -16,7 +20,7 @@ export async function POST(request) {
 
         await connectDB();
 
-        // Calculate amount correctly using a for...of loop for async operations
+        // Calculate amount
         let amount = 0;
         for (const item of items) {
             const product = await Product.findById(item.product);
@@ -27,15 +31,17 @@ export async function POST(request) {
 
         const finalAmount = amount + Math.floor(amount * 0.02);
 
-        await inngest.send({
-            name: 'order/created',
-            data: {
-                userId,
-                address,
-                items,
-                amount: finalAmount,
-                date: Date.now()
-            }
+        // CREATE ORDER DIRECTLY IN DATABASE FOR COD
+        // This ensures the order exists immediately without waiting for background workers
+        await Order.create({
+            userId,
+            address,
+            items,
+            amount: finalAmount,
+            date: Date.now(),
+            paymentType: 'COD',
+            isPaid: false,
+            status: 'Order placed'
         });
 
         // Clear user cart 
@@ -45,10 +51,10 @@ export async function POST(request) {
             await user.save();
         }
 
-        return NextResponse.json({ success: true, message: 'Order placed' });
+        return NextResponse.json({ success: true, message: 'Order placed successfully' });
 
     } catch (error) {
-        console.error(error);
+        console.error("COD Create API error:", error);
         return NextResponse.json({ success: false, message: error.message });
     }
 }

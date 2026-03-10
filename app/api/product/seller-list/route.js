@@ -1,23 +1,29 @@
 import authSeller from "@/lib/authSeller";
 import Product from "@/models/Product";
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import connectDB from "@/config/db";
 
-export async function GET(request) {
+export async function GET() {
     try {
-        const { userId } = getAuth(request)
-        const isSeller = await authSeller(userId)
+        const { userId } = await auth();
 
-        if (!isSeller) {
-            return NextResponse.json({ success: false, message: "Unauthorized" })
+        if (!userId) {
+            return NextResponse.json({ success: false, message: "Unauthorized" });
         }
 
-        await connectDB()
-        const products = await Product.find({ userId })
+        const isSeller = await authSeller(userId);
 
-        return NextResponse.json({ success: true, products })
+        if (!isSeller) {
+            return NextResponse.json({ success: false, message: "Unauthorized" });
+        }
+
+        await connectDB();
+        const products = await Product.find({ userId });
+
+        return NextResponse.json({ success: true, products });
     } catch (error) {
-        return NextResponse.json({ success: false, message: error.message })
+        console.error("Seller Product List API Error:", error);
+        return NextResponse.json({ success: false, message: error.message });
     }
 }

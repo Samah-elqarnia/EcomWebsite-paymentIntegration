@@ -1,17 +1,27 @@
 import connectDB from "@/config/db";
 import User from "@/models/user";
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function GET() {
     try {
-        const { userId } = getAuth(request);
+        const { userId } = await auth();
+
+        if (!userId) {
+            return NextResponse.json({ success: false, message: "Unauthorized" });
+        }
+
         await connectDB();
         const user = await User.findById(userId);
 
-        const { cartItems } = user;
+        if (!user) {
+            return NextResponse.json({ success: false, message: "User not found" });
+        }
+
+        const { cartItems } = user || { cartItems: {} };
         return NextResponse.json({ success: true, cartItems });
     } catch (error) {
+        console.error("Cart Get API Error:", error);
         return NextResponse.json({ success: false, message: error.message });
     }
 }

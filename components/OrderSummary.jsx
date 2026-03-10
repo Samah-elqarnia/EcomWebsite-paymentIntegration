@@ -1,3 +1,4 @@
+'use client';
 import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +10,7 @@ const OrderSummary = () => {
   const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext()
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [isPlacedOrderClicked, setIsPlaceOrderClicked] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
 
   const fetchUserAddresses = async () => {
@@ -63,6 +64,35 @@ const OrderSummary = () => {
         toast.error(data.message)
       }
 
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  const createOrderStripe = async () => {
+    try {
+      if (!selectedAddress) {
+        return toast.error("Please select a shipping address");
+      }
+
+      const token = await getToken();
+      const items = Object.keys(cartItems).map(id => ({
+        product: id,
+        quantity: cartItems[id]
+      }))
+
+      const { data } = await axios.post('/api/order/stripe', {
+        address: selectedAddress._id,
+        items
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (data.success) {
+        window.location.href = data.url
+      } else {
+        toast.error(data.message)
+      }
     } catch (error) {
       toast.error(error.message)
     }
@@ -171,16 +201,40 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button
-        onClick={createOrder}
-        disabled={getCartCount() === 0}
-        className="w-full bg-techWhite text-techBlack font-bold py-4 mt-8 rounded-xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
-      >
-        Proceed to Checkout
-      </button>
+      {!isPlacedOrderClicked ? (
+        <button
+          onClick={() => setIsPlaceOrderClicked(true)}
+          disabled={getCartCount() === 0}
+          className="w-full bg-techWhite text-techBlack font-bold py-4 mt-8 rounded-xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none uppercase tracking-widest text-xs"
+        >
+          Select Payment Method
+        </button>
+      ) : (
+        <div className="flex flex-col gap-3 mt-8">
+          <button
+            onClick={createOrder}
+            className="w-full bg-techWhite/10 border border-techGray text-techWhite font-bold py-4 rounded-xl hover:bg-techWhite/20 transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-2"
+          >
+            <span className="w-2 h-2 rounded-full bg-techNeon animate-pulse"></span>
+            Cash on Delivery
+          </button>
+          <button
+            onClick={createOrderStripe}
+            className="w-full bg-techWhite text-techBlack font-bold py-4 rounded-xl hover:bg-gray-200 transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-3 shadow-[0_0_15px_rgba(0,163,255,0.3)]"
+          >
+            Pay with Card (Stripe)
+          </button>
+          <button
+            onClick={() => setIsPlaceOrderClicked(false)}
+            className="text-xs text-gray-500 hover:text-techWhite transition-colors text-center mt-1 outline-none"
+          >
+            ← Back to summary
+          </button>
+        </div>
+      )}
 
-      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500 font-medium">
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
+      <div className="mt-6 flex items-center justify-center gap-2 text-[10px] text-gray-500 uppercase tracking-widest font-bold">
+        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" /></svg>
         Secure Encrypted Checkout
       </div>
     </div >

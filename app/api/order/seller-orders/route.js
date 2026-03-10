@@ -1,4 +1,4 @@
-import { getAuth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import connectDB from "@/config/db";
 import Order from "@/models/Order";
@@ -8,7 +8,7 @@ import Product from "@/models/Product";
 
 export async function GET(request) {
     try {
-        const { userId } = getAuth(request);
+        const { userId } = await auth();
         const isSeller = await authSeller(userId);
 
         if (!isSeller) {
@@ -21,13 +21,12 @@ export async function GET(request) {
         Address.schema;
         Product.schema;
 
-        // For now, returning all orders. In a multi-seller environment, 
-        // you would filter orders that contain this seller's products.
+        // For now, returning all orders.
         const orders = await Order.find({}).populate('address items.product');
 
         return NextResponse.json({ success: true, orders });
     } catch (error) {
-        console.error(error);
+        console.error("Seller Order API error:", error);
         return NextResponse.json({ success: false, message: error.message });
     }
 }

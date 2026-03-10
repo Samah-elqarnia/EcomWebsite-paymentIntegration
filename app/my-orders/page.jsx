@@ -49,6 +49,7 @@ const MyOrders = () => {
             case 'delivered': return 'text-green-400 bg-green-400/10 border-green-400/20';
             case 'order placed': return 'text-techElectric bg-techElectric/10 border-techElectric/20';
             case 'shipped': return 'text-techNeon bg-techNeon/10 border-techNeon/20';
+            case 'payment pending': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
             default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
         }
     }
@@ -108,15 +109,25 @@ const MyOrders = () => {
                                             </div>
                                         </div>
 
+                                        {/* Payment Info */}
+                                        <div className="lg:px-8 lg:border-l border-techGray/30 space-y-1">
+                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Payment</p>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-techWhite text-xs font-semibold uppercase">{order.paymentType}</span>
+                                                <span className={`w-1.5 h-1.5 rounded-full ${order.isPaid ? 'bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.5)]' : 'bg-red-400 shadow-[0_0_5px_rgba(248,113,113,0.5)]'}`}></span>
+                                                <span className="text-[10px] text-gray-400 capitalize">{order.isPaid ? 'Paid' : 'Unpaid'}</span>
+                                            </div>
+                                        </div>
+
                                         {/* Delivery Info */}
                                         <div className="lg:px-8 lg:border-l border-techGray/30 space-y-0.5">
-                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Delivering to</p>
-                                            <p className="text-techWhite font-semibold">{order.address.fullName}</p>
-                                            <p className="text-gray-500 text-xs">{order.address.city}, {order.address.state}</p>
+                                            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Delivery</p>
+                                            <p className="text-techWhite font-semibold text-xs">{order.address.fullName}</p>
+                                            <p className="text-gray-500 text-[10px]">{order.address.city}, {order.address.state}</p>
                                         </div>
 
                                         {/* Status & Amount */}
-                                        <div className="flex flex-col lg:items-end gap-1 shrink-0">
+                                        <div className="flex flex-col lg:items-end gap-1 shrink-0 lg:ml-auto">
                                             <p className="text-xl font-bold text-techWhite">{currency}{order.amount}</p>
                                             <div className="mt-1">
                                                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(order.status)}`}>
@@ -128,7 +139,7 @@ const MyOrders = () => {
                                         {/* Actions */}
                                         <div className="lg:ml-4 flex flex-col gap-2 w-full lg:w-auto">
                                             <button className="px-5 py-2.5 bg-techWhite/5 border border-techGray text-techWhite font-medium rounded-lg hover:bg-techWhite/10 transition-all text-[10px] uppercase tracking-widest">
-                                                Track Order
+                                                Track
                                             </button>
                                         </div>
                                     </div>

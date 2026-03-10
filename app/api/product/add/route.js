@@ -1,6 +1,6 @@
 import connectDB from '@/config/db';
 import authSeller from '@/lib/authSeller';
-import { getAuth } from '@clerk/nextjs/server';
+import { auth } from '@clerk/nextjs/server';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextResponse } from 'next/server';
 import Product from '@/models/Product';
@@ -14,11 +14,17 @@ cloudinary.config({
 
 export async function POST(request) {
     try {
-        const { userId } = getAuth(request);
+        const { userId } = await auth();
+
+        if (!userId) {
+            return NextResponse.json({ success: false, message: "Unauthorized" })
+        }
+
         const isSeller = await authSeller(userId)
         if (!isSeller) {
             return NextResponse.json({ success: false, message: "Unauthorized" })
         }
+
         const formData = await request.formData();
 
         const name = formData.get('name');
@@ -49,13 +55,12 @@ export async function POST(request) {
                     )
                     stream.write(buffer)
                     stream.end()
-                }
-
-                )
+                })
             }))
 
         const image = result.map(result => result.secure_url)
         await connectDB()
+
         const newProduct = await Product.create({
             userId,
             name,
@@ -66,9 +71,11 @@ export async function POST(request) {
             image,
             date: Date.now()
         })
+
         return NextResponse.json({ success: true, message: "Product added successfully", newProduct })
 
     } catch (error) {
+        console.error("Product Add API Error:", error);
         return NextResponse.json({ success: false, message: error.message })
     }
 }
